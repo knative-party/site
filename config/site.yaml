@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: party
+
+---
+
+apiVersion: serving.knative.dev/v1alpha1
+kind: DomainMapping
+metadata:
+  name: knative.party
+  namespace: party
+spec:
+  ref:
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    name: knative-party-site
+    namespace: party
+
+---
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: knative-party-site
+  namespace: party
+spec:
+  template:
+    spec:
+      containers:
+      - image: ko://github.com/knative-party/site
