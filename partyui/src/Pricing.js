@@ -81,26 +81,32 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const tiers = [{
-    title: 'Serving',
-    onCall: {
-        name: '@mattmoor',
-        start: 'Jan 4, 2021',
-        end: 'Jan 8, 2021',
-        github: 'https://github.com/mattmoor',
-        questions: "#serving-questions",
-        questionsSlack: "https://knative.slack.com/archives/C0186KU7STW",
-    },
+  title: 'Serving',
+  onCall: {
+    name: '@	vagababov',
+    start: 'Jan 4, 2021',
+    end: 'Jan 8, 2021',
+    github: 'https://github.com/	vagababov',
+    questions: "#serving-questions",
+    questionsSlack: "https://knative.slack.com/archives/C0186KU7STW",
+  },
 }, {
-    title: 'Eventing',
-    onCall: {
-        name: '@n3wscott',
-        start: 'Jan 4, 2021',
-        end: 'Jan 8, 2021',
-        github: 'https://github.com/n3wscott',
-        questions: "#eventing-questions",
-        questionsSlack: "https://knative.slack.com/archives/C017X0PFC0P",
-    },
+  title: 'Eventing', // https://github.com/knative/eventing/blob/master/support/COMMUNITY_CONTACTS.md
+  onCall: {
+    name: '@vaikas',
+    start: 'Jan 11, 2021',
+    end: 'Jan 15, 2021',
+    github: 'https://github.com/vaikas',
+    questions: "#eventing-questions",
+    questionsSlack: "https://knative.slack.com/archives/C017X0PFC0P",
+  },
 }];
+
+const TOC = { // https://docs.google.com/document/d/1LzOUbTMkMEsCRfwjYm5TKZUWfyXpO589-r9K2rXlHfk/edit#heading=h.jlesqjgc1ij3
+  title: "ToC Working Group Update",
+  wg: 'Eventing Sources WG', 
+  date: 'Jan 14, 2021 @ 8:30 – 9:15am PST',
+};
 
 export default function Pricing() {
     const classes = useStyles();
@@ -119,7 +125,6 @@ export default function Pricing() {
             <Container maxWidth="xlg" component="main">
                 <Grid container spacing={5} alignItems="flex-end">
                     {tiers.map((tier) => (
-                        // Enterprise card is full width at sm breakpoint
                         <Grid item key={tier.title} xs={12} sm={6} md={6}>
                             <Card>
                                 <CardHeader
@@ -140,6 +145,30 @@ export default function Pricing() {
                             </Card>
                         </Grid>
                     ))}
+                    <Grid item key={TOC.title} xs={12} sm={12} md={12}>
+                        <Card>
+                            <CardHeader
+                                title={TOC.title}
+                                subheader={TOC.subheader}
+                                titleTypographyProps={{ align: 'center' }}
+                                subheaderTypographyProps={{ align: 'center' }}
+                                className={classes.cardHeader}
+                            />
+                            <CardContent>
+                              <Typography component="h5" variant="h4" align="center" color="textPrimary" gutterBottom>
+                                {TOC.wg}
+                              </Typography>
+                              <Typography variant="h7" align="center" color="textSecondary" component="p">
+                                {TOC.date}
+                              </Typography>
+                            </CardContent>
+                            <CardActions>
+                                <Button fullWidth variant={TOC.buttonVariant} color="primary">
+                                    {TOC.buttonText}
+                                </Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
                 </Grid>
             </Container>
             {/* Footer */}
