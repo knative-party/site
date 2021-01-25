@@ -21,13 +21,13 @@ export default function FolderList(props) {
     console.log(`${onCall.github}.png?size=60`)
     return (
         <List className={classes.root}>
-            <ListItem onClick={() => window.open(onCall.github)}>
+            <ListItem button onClick={() => window.open(onCall.github)}>
                 <ListItemAvatar>
                     <Avatar src={`${onCall.github}.png?size=60`} />
                 </ListItemAvatar>
                 <ListItemText primary={onCall.name} secondary={`On-Call through ${onCall.end}`} />
             </ListItem>
-            <ListItem onClick={() => window.open(onCall.questionsSlack)}>
+            <ListItem button onClick={() => window.open(onCall.questionsSlack)}>
                 <ListItemAvatar>
                     <Avatar>
                         <QuestionAnswerIcon />
