@@ -83,20 +83,20 @@ const useStyles = makeStyles((theme) => ({
 const tiers = [{
   title: 'Serving',  // https://github.com/knative/serving/blob/master/support/COMMUNITY_CONTACTS.md
   onCall: {
-    name: '@julz',
-    start: 'Jan 25, 2021',
-    end: 'Jan 29, 2021',
-    github: 'https://github.com/julz',
+    name: '@nak3',
+    start: 'Feb 15, 2021',
+    end: 'Feb 19, 2021',
+    github: 'https://github.com/nak3',
     questions: "#serving-questions",
     questionsSlack: "https://knative.slack.com/archives/C0186KU7STW",
   },
 }, {
   title: 'Eventing', // https://github.com/knative/eventing/blob/master/support/COMMUNITY_CONTACTS.md
   onCall: {
-    name: '@lionelvillard',
-    start: 'Jan 25, 2021',
-    end: 'Jan 29, 2021',
-    github: 'https://github.com/lionelvillard',
+    name: '@matzew',
+    start: 'Feb 15, 2021',
+    end: 'Feb 19, 2021',
+    github: 'https://github.com/matzew',
     questions: "#eventing-questions",
     questionsSlack: "https://knative.slack.com/archives/C017X0PFC0P",
   },
@@ -104,8 +104,8 @@ const tiers = [{
 
 const TOC = { // https://docs.google.com/document/d/1LzOUbTMkMEsCRfwjYm5TKZUWfyXpO589-r9K2rXlHfk/edit#heading=h.jlesqjgc1ij3
   title: "ToC Working Group Update",
-  wg: 'Scaling WG', 
-  date: 'Jan 28, 2021 @ 8:30 – 9:15am PST',
+  wg: 'Eventing WG', 
+  date: 'Feb 18, 2021 @ 8:30 – 9:15am PST',
 };
 
 export default function Pricing() {
