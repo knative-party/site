@@ -46,28 +46,28 @@ func getNow() Now {
 		Tiers: []tier{{
 			Title: "Serving", // https://github.com/knative/serving/blob/master/support/COMMUNITY_CONTACTS.md
 			OnCall: onCall{
-				Name:           "@yanweiguo",
-				Start:          "Feb 22, 2021",
-				End:            "Feb 26, 2021",
-				Github:         "https://github.com/yanweiguo",
+				Name:           "@dprotaso",
+				Start:          "March 1, 2021",
+				End:            "March 5, 2021",
+				Github:         "https://github.com/dprotaso",
 				Questions:      "#serving-questions",
 				QuestionsSlack: "https://knative.slack.com/archives/C0186KU7STW",
 			},
 		}, {
 			Title: "Eventing", // https://github.com/knative/eventing/blob/master/support/COMMUNITY_CONTACTS.md
 			OnCall: onCall{
-				Name:           "@vaikas",
-				Start:          "Feb 22, 2021",
-				End:            "Feb 26, 2021",
-				Github:         "https://github.com/vaikas",
+				Name:           "@pierDipi",
+				Start:          "March 1, 2021",
+				End:            "March 5, 2021",
+				Github:         "https://github.com/pierDipi",
 				Questions:      "#eventing-questions",
 				QuestionsSlack: "https://knative.slack.com/archives/C017X0PFC0P",
 			},
 		}},
 		Events: []event{{
 			Title:        "ToC Working Group Update", // https://docs.google.com/document/d/1LzOUbTMkMEsCRfwjYm5TKZUWfyXpO589-r9K2rXlHfk/edit#heading=h.jlesqjgc1ij3
-			WorkingGroup: "Docs WG",
-			When:         "Feb 25, 2021 @ 8:30 – 9:15am PST",
+			WorkingGroup: "Networking WG",            // https://github.com/knative/community/blob/master/working-groups/WORKING-GROUPS.md
+			When:         "March 4, 2021 @ 8:30 – 9:15am PST",
 		}},
 	}
 }
