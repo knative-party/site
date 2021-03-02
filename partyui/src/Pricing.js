@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
@@ -79,105 +79,165 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(3),
     },
 }));
-
-const tiers = [{
-  title: 'Serving',
-  onCall: {
-    name: '@	vagababov',
-    start: 'Jan 4, 2021',
-    end: 'Jan 8, 2021',
-    github: 'https://github.com/	vagababov',
-    questions: "#serving-questions",
-    questionsSlack: "https://knative.slack.com/archives/C0186KU7STW",
-  },
-}, {
-  title: 'Eventing', // https://github.com/knative/eventing/blob/master/support/COMMUNITY_CONTACTS.md
-  onCall: {
-    name: '@vaikas',
-    start: 'Jan 11, 2021',
-    end: 'Jan 15, 2021',
-    github: 'https://github.com/vaikas',
-    questions: "#eventing-questions",
-    questionsSlack: "https://knative.slack.com/archives/C017X0PFC0P",
-  },
-}];
+//
+// const tiers = [{
+//   title: 'Serving',  // https://github.com/knative/serving/blob/master/support/COMMUNITY_CONTACTS.md
+//   onCall: {
+//     name: '@nak3',
+//     start: 'Feb 15, 2021',
+//     end: 'Feb 19, 2021',
+//     github: 'https://github.com/nak3',
+//     questions: "#serving-questions",
+//     questionsSlack: "https://knative.slack.com/archives/C0186KU7STW",
+//   },
+// }, {
+//   title: 'Eventing', // https://github.com/knative/eventing/blob/master/support/COMMUNITY_CONTACTS.md
+//   onCall: {
+//     name: '@matzew',
+//     start: 'Feb 15, 2021',
+//     end: 'Feb 19, 2021',
+//     github: 'https://github.com/matzew',
+//     questions: "#eventing-questions",
+//     questionsSlack: "https://knative.slack.com/archives/C017X0PFC0P",
+//   },
+// }];
 
 const TOC = { // https://docs.google.com/document/d/1LzOUbTMkMEsCRfwjYm5TKZUWfyXpO589-r9K2rXlHfk/edit#heading=h.jlesqjgc1ij3
   title: "ToC Working Group Update",
-  wg: 'Eventing Sources WG', 
-  date: 'Jan 14, 2021 @ 8:30 – 9:15am PST',
+  wg: 'Eventing WG',
+  date: 'Feb 18, 2021 @ 8:30 – 9:15am PST',
 };
 
 export default function Pricing() {
+    const [error, setError] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [items, setItems] = useState({support:[],events:[]});
+
     const classes = useStyles();
 
-    return (
-        <React.Fragment>
-            <CssBaseline />
-            {/* Hero unit */}
-            <Container maxWidth="sm" component="main" className={classes.heroContent}>
-                <Logo />
-                <Typography variant="h5" align="center" color="textSecondary" component="p">
-                    Time to Party! 🎉🎉
-                </Typography>
-            </Container>
-            {/* End hero unit */}
-            <Container maxWidth="xlg" component="main">
-                <Grid container spacing={5} alignItems="flex-end">
-                    {tiers.map((tier) => (
-                        <Grid item key={tier.title} xs={12} sm={6} md={6}>
+    // Note: the empty deps array [] means
+    // this useEffect will run once
+    // similar to componentDidMount()
+    useEffect(() => {
+        fetch("/now")
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    setIsLoaded(true);
+                    setItems(result);
+                },
+                // Note: it's important to handle errors here
+                // instead of a catch() block so that we don't swallow
+                // exceptions from actual bugs in components.
+                (error) => {
+                    setIsLoaded(true);
+                    setError(error);
+                }
+            )
+    }, [])
+
+    if (error) {
+        return (
+            <React.Fragment>
+                <CssBaseline/>
+                {/* Hero unit */}
+                <Container maxWidth="sm" component="main" className={classes.heroContent}>
+                    <Logo/>
+                    <Typography variant="h5" align="center" color="textSecondary" component="p">
+                        Error: {error.message}
+                    </Typography>
+                </Container>
+            </React.Fragment>
+        )
+    } else if (!isLoaded) {
+        return (
+            <React.Fragment>
+                <CssBaseline/>
+                {/* Hero unit */}
+                <Container maxWidth="sm" component="main" className={classes.heroContent}>
+                    <Logo/>
+                    <Typography variant="h5" align="center" color="textSecondary" component="p">
+                        loading...
+                    </Typography>
+                </Container>
+            </React.Fragment>
+        )
+    } else {
+        const tiers = items.support;
+        const events = items.events;
+
+        return (
+            <React.Fragment>
+                <CssBaseline/>
+                {/* Hero unit */}
+                <Container maxWidth="sm" component="main" className={classes.heroContent}>
+                    <Logo/>
+                    <Typography variant="h5" align="center" color="textSecondary" component="p">
+                        Time to Party! 🎉🎉
+                    </Typography>
+                </Container>
+                <div></div>
+                {/* End hero unit */}
+                <Container maxWidth="xlg" component="main">
+                    <Grid container spacing={5} alignItems="flex-end">
+                        {tiers.map((tier) => (
+                            <Grid item key={tier.title} xs={12} sm={6} md={6}>
+                                <Card>
+                                    <CardHeader
+                                        title={tier.title}
+                                        subheader={tier.subheader}
+                                        titleTypographyProps={{align: 'center'}}
+                                        subheaderTypographyProps={{align: 'center'}}
+                                        className={classes.cardHeader}
+                                    />
+                                    <CardContent>
+                                        <OnCall onCall={tier.onCall}/>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Button fullWidth variant={tier.buttonVariant} color="primary">
+                                            {tier.buttonText}
+                                        </Button>
+                                    </CardActions>
+                                </Card>
+                            </Grid>
+                        ))}
+                        {events.map((event) => (
+                        <Grid item key={event.title} xs={12} sm={12} md={12}>
                             <Card>
                                 <CardHeader
-                                    title={tier.title}
-                                    subheader={tier.subheader}
-                                    titleTypographyProps={{ align: 'center' }}
-                                    subheaderTypographyProps={{ align: 'center' }}
+                                    title={event.title}
+                                    subheader={event.subheader}
+                                    titleTypographyProps={{align: 'center'}}
+                                    subheaderTypographyProps={{align: 'center'}}
                                     className={classes.cardHeader}
                                 />
                                 <CardContent>
-                                    <OnCall onCall={tier.onCall}/>
+                                    <Typography component="h5" variant="h4" align="center" color="textPrimary"
+                                                gutterBottom>
+                                        {event.wg}
+                                    </Typography>
+                                    <Typography variant="h7" align="center" color="textSecondary" component="p">
+                                        {event.when}
+                                    </Typography>
                                 </CardContent>
                                 <CardActions>
-                                    <Button fullWidth variant={tier.buttonVariant} color="primary">
-                                        {tier.buttonText}
+                                    <Button fullWidth variant={event.buttonVariant} color="primary">
+                                        {event.buttonText}
                                     </Button>
                                 </CardActions>
                             </Card>
                         </Grid>
-                    ))}
-                    <Grid item key={TOC.title} xs={12} sm={12} md={12}>
-                        <Card>
-                            <CardHeader
-                                title={TOC.title}
-                                subheader={TOC.subheader}
-                                titleTypographyProps={{ align: 'center' }}
-                                subheaderTypographyProps={{ align: 'center' }}
-                                className={classes.cardHeader}
-                            />
-                            <CardContent>
-                              <Typography component="h5" variant="h4" align="center" color="textPrimary" gutterBottom>
-                                {TOC.wg}
-                              </Typography>
-                              <Typography variant="h7" align="center" color="textSecondary" component="p">
-                                {TOC.date}
-                              </Typography>
-                            </CardContent>
-                            <CardActions>
-                                <Button fullWidth variant={TOC.buttonVariant} color="primary">
-                                    {TOC.buttonText}
-                                </Button>
-                            </CardActions>
-                        </Card>
+                        ))}
                     </Grid>
-                </Grid>
-            </Container>
-            {/* Footer */}
-            <Container maxWidth="md" component="footer" className={classes.footer}>
-                <Box mt={5}>
-                    <Copyright />
-                </Box>
-            </Container>
-            {/* End footer */}
-        </React.Fragment>
-    );
+                </Container>
+                {/* Footer */}
+                <Container maxWidth="md" component="footer" className={classes.footer}>
+                    <Box mt={5}>
+                        <Copyright/>
+                    </Box>
+                </Container>
+                {/* End footer */}
+            </React.Fragment>
+        );
+    }
 }

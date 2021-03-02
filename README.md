@@ -2,7 +2,14 @@
 Party on the web!
 
 
-## Local dev:
+## Release
+
+```
+pushd partyui; yarn build; popd
+ko apply -f ./config
+```
+
+## Local dev
 
 ```
 pushd partyui; yarn build; popd
