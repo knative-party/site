@@ -1,12 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
-import Pricing from './Pricing';
+import Routes from './Routes';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Pricing />
+    <Routes />
   </React.StrictMode>,
   document.getElementById('root')
 );
