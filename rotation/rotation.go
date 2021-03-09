@@ -85,3 +85,7 @@ func (r *Rotation) At(t time.Time) RotationEntry {
 	entry := r.entries[len(r.entries)]
 	return entry
 }
+
+func (r *RotationEntry) String() string {
+	return fmt.Sprintf("%s-%s: %v", r.Start, r.End, r.Data)
+}
