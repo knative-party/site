@@ -1,6 +1,6 @@
 # www
-Party on the web!
 
+Party on the web!
 
 ## Release
 
@@ -10,6 +10,9 @@ ko apply -f ./config
 ```
 
 ## Local dev
+
+You'll need [`yarn`](https://yarnpkg.com/), and to run `yarn install` once in
+the `partyui` directory.
 
 ```
 pushd partyui; yarn build; popd
