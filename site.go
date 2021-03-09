@@ -81,8 +81,8 @@ func getNow() Now {
 			Title: r.Metadata["title"],
 			OnCall: onCall{
 				Name:           entry.Data[0],
-				Start:          entry.Start.Format("March 1, 2006"),
-				End:            entry.End.Format("March 1, 2006"),
+				Start:          entry.Start.Format("March 2, 2006"),
+				End:            entry.End.Format("March 2, 2006"),
 				Github:         "https://github.com/" + entry.Data[0],
 				Questions:      r.Metadata["slack"],
 				QuestionsSlack: r.Metadata["slacklink"],
