@@ -87,34 +87,6 @@ const useStyles = makeStyles((theme) => ({
         paddingTop: theme.spacing(3),
     },
 }));
-//
-// const tiers = [{
-//   title: 'Serving',  // https://github.com/knative/serving/blob/master/support/COMMUNITY_CONTACTS.md
-//   onCall: {
-//     name: '@nak3',
-//     start: 'Feb 15, 2021',
-//     end: 'Feb 19, 2021',
-//     github: 'https://github.com/nak3',
-//     questions: "#serving-questions",
-//     questionsSlack: "https://knative.slack.com/archives/C0186KU7STW",
-//   },
-// }, {
-//   title: 'Eventing', // https://github.com/knative/eventing/blob/master/support/COMMUNITY_CONTACTS.md
-//   onCall: {
-//     name: '@matzew',
-//     start: 'Feb 15, 2021',
-//     end: 'Feb 19, 2021',
-//     github: 'https://github.com/matzew',
-//     questions: "#eventing-questions",
-//     questionsSlack: "https://knative.slack.com/archives/C017X0PFC0P",
-//   },
-// }];
-
-const TOC = { // https://docs.google.com/document/d/1LzOUbTMkMEsCRfwjYm5TKZUWfyXpO589-r9K2rXlHfk/edit#heading=h.jlesqjgc1ij3
-  title: "ToC Working Group Update",
-  wg: 'Eventing WG',
-  date: 'Feb 18, 2021 @ 8:30 – 9:15am PST',
-};
 
 export default function Events() {
     const [error, setError] = useState(null);
@@ -189,7 +161,7 @@ export default function Events() {
                 <Container maxWidth="xlg" component="main">
                     <Grid container spacing={5} alignItems="flex-end">
                         {tiers.map((tier) => (
-                            <Grid item key={tier.title} xs={12} sm={6} md={6}>
+                            <Grid item key={tier.title} xs={12} sm={12} md={4} lg={4}>
                                 <Card>
                                     <CardHeader
                                         title={tier.title}
