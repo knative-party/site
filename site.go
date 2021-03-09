@@ -99,7 +99,6 @@ type tier struct {
 }
 
 type onCall struct {
-	rotationFile   string `json:"-"`
 	Name           string `json:"name"`
 	Start          string `json:"start"`
 	End            string `json:"end"`
