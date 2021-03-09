@@ -53,8 +53,8 @@ func getNow() Now {
 		// TODO: use rotations for events, too.
 		Events: []event{{
 			Title:        "ToC Working Group Update", // https://docs.google.com/document/d/1LzOUbTMkMEsCRfwjYm5TKZUWfyXpO589-r9K2rXlHfk/edit#heading=h.jlesqjgc1ij3
-			WorkingGroup: "Networking WG",            // https://github.com/knative/community/blob/master/working-groups/WORKING-GROUPS.md
-			When:         "March 4, 2021 @ 8:30 – 9:15am PST",
+			WorkingGroup: "Security WG",              // https://github.com/knative/community/blob/master/working-groups/WORKING-GROUPS.md
+			When:         "March 11, 2021 @ 8:30 – 9:15am PST",
 		}},
 	}
 
