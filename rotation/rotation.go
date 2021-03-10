@@ -1,35 +1,65 @@
+// Package rotation defines tools for managing a simple "oncall rotation" file.
+// The file format is designed to be easy for both computers and humans to read,
+// and is line-oriented, with `#` comments.
+//
+// There are three types of lines:
+// - Empty lines or simple comments, of the form `# ....`
+// - Metadata lines, indicated by `#@ key: values`
+// - Rotation start lines, indicated as `RFC3339Date | who is oncall`
+//
+// Rotation start lines must be ordered in the file from oldest to newest; it is
+// possible to keep as much rotation history (or future rotation information) as
+// desired.
 package rotation
 
 import (
 	"bufio"
 	"fmt"
 	"io"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 )
 
-type RotationEntry struct {
+// Rotation defines a rotation -- a series of events with associated data which
+// fill a calendar range (one entry ends when the next one starts, entries are
+// in calendar order), and some metadata about the Rotation.
+type Rotation struct {
+	entries  []Entry
+	Metadata map[string]string
+}
+
+// Entry describes a single entry in a rotation -- a calendar period
+// with a defined start and end time, and some string data.
+type Entry struct {
 	Start time.Time
 	End   time.Time
 	Data  []string
 }
 
-type Rotation struct {
-	entries  []RotationEntry
-	Metadata map[string]string
-}
-
-func RotationFromFile(name string) (Rotation, error) {
+// FromFile reads a rotation from the specified filename.
+func FromFile(name string) (Rotation, error) {
 	f, err := os.Open(name)
 	defer f.Close()
 	if err != nil {
 		return Rotation{}, err
 	}
-	return ReadFile(f)
+	return Read(f)
 }
 
-func ReadFile(r io.Reader) (Rotation, error) {
+// FromURL reads a rotation fetched by a GET of the specified URL.
+func FromURL(url string) (Rotation, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return Rotation{}, err
+	}
+	return Read(resp.Body)
+}
+
+// Read reads a rotation from any reader; `FromFile` and `FromURL` are
+// helpers for common rotation sources.
+func Read(r io.Reader) (Rotation, error) {
 	retval := Rotation{
 		Metadata: make(map[string]string),
 	}
@@ -58,9 +88,9 @@ func ReadFile(r io.Reader) (Rotation, error) {
 			return retval, err
 		}
 		if fields[1] != "|" {
-			return retval, fmt.Errorf("")
+			return retval, fmt.Errorf(`Expected "<DATE> | <DATA>", missing "|"`)
 		}
-		retval.entries = append(retval.entries, RotationEntry{
+		retval.entries = append(retval.entries, Entry{
 			Start: start,
 			Data:  fields[2:],
 		})
@@ -80,31 +110,44 @@ func ReadFile(r io.Reader) (Rotation, error) {
 	return retval, nil
 }
 
-func (r *Rotation) At(t time.Time) RotationEntry {
-	if t.Before(r.entries[0].Start) {
-		return RotationEntry{time.Time{}, r.entries[0].Start, []string{"before rotation"}}
-	}
-	for i, s := range r.entries {
-		if i >= len(r.entries) {
-			break
-		}
-		if s.Start.Before(t) && r.entries[i+1].Start.After(t) {
+// At returns the entry from the rotation which encompases the current time
+// (i.e. Start < t < End).
+func (r *Rotation) At(t time.Time) Entry {
+	for i := range r.entries {
+		s := r.entries[len(r.entries)-i-1]
+		if s.Start.Before(t) {
 			return s
 		}
 	}
-	entry := r.entries[len(r.entries)]
-	return entry
+	//	if t.Before(r.entries[0].Start) {
+	//}
+	//for i, s := range r.entries {
+	// 	if i >= len(r.entries) {
+	// 		break
+	// 	}
+	// 	if s.Start.Before(t) && r.entries[i+1].Start.After(t) {
+	// 		return s
+	// 	}
+	// }
+	return Entry{time.Time{}, r.entries[0].Start, []string{"before rotation"}}
+	//	entry := r.entries[len(r.entries)]
+	//	return entry
 }
 
-func (r *Rotation) Next(t time.Time) RotationEntry {
+// Next determines the entry which begins *after* the current time.
+func (r *Rotation) Next(t time.Time) Entry {
+	if len(r.entries) == 0 {
+		return Entry{Data: []string{"no entries"}}
+	}
 	for _, s := range r.entries {
 		if s.Start.After(t) {
 			return s
 		}
 	}
-	return r.entries[len(r.entries)]
+	return r.entries[len(r.entries)-1]
 }
 
-func (r *RotationEntry) String() string {
+// String implements the Stringer interface.
+func (r *Entry) String() string {
 	return fmt.Sprintf("%s-%s: %v", r.Start, r.End, r.Data)
 }

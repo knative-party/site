@@ -1,0 +1,6 @@
+events:
+  - https://github.com/knative-party/site/raw/main/events/toc-review.rotation
+rotations:
+  - https://github.com/knative-party/site/raw/main/rotations/1-serving.rotation
+  - https://github.com/knative-party/site/raw/main/rotations/2-eventing.rotation
+  - https://github.com/knative-party/site/raw/main/rotations/security.rotation
