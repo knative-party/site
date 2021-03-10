@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -49,29 +48,43 @@ func main() {
 // TODO: add a role button for a job description.
 
 func getNow() Now {
-	now := Now{
-		// TODO: use rotations for events, too.
-		Events: []event{{
-			Title:        "ToC Working Group Update", // https://docs.google.com/document/d/1LzOUbTMkMEsCRfwjYm5TKZUWfyXpO589-r9K2rXlHfk/edit#heading=h.jlesqjgc1ij3
-			WorkingGroup: "Security WG",              // https://github.com/knative/community/blob/master/working-groups/WORKING-GROUPS.md
-			When:         "March 11, 2021 @ 8:30 – 9:15am PST",
-		}},
+	now := Now{}
+
+	eventDir := filepath.Join(env.DataPath, "events")
+	events, err := ioutil.ReadDir(eventDir)
+	if err != nil {
+		log.Printf("Unable to open %q: %s", eventDir, err)
+	}
+	for _, f := range events {
+		path := filepath.Join(eventDir, f.Name())
+		r, err := rotation.RotationFromFile(path)
+		if err != nil {
+			log.Printf("Unable to read %q: %s", path, err)
+		}
+		duration, err := time.ParseDuration(r.Metadata["duration"])
+		if err != nil {
+			log.Printf("Unable to parse duration from %q: %s", path, err)
+			duration = 1 * time.Hour
+		}
+		entry := r.Next(time.Now())
+		end := entry.Start.Add(duration)
+		now.Events = append(now.Events, event{
+			Title:        r.Metadata["title"],
+			WorkingGroup: strings.Join(entry.Data, " "),
+			When:         entry.Start.Format("March 2, 2006 @ 15:04") + " - " + end.Format("15:04 MST"),
+		})
 	}
 
 	// Add from rotations
 	rotDir := filepath.Join(env.DataPath, "rotations")
-	files, err := ioutil.ReadDir(rotDir)
+	rotations, err := ioutil.ReadDir(rotDir)
 	if err != nil {
 		log.Printf("Unable to open %q: %s", rotDir, err)
 	}
-	for _, f := range files {
+	for _, f := range rotations {
 		path := filepath.Join(rotDir, f.Name())
-		f, err := os.Open(path)
-		if err != nil {
-			log.Printf("Unable to read %q: %s", path, err)
-			continue
-		}
-		r, err := rotation.ReadFile(f)
+
+		r, err := rotation.RotationFromFile(path)
 		if err != nil {
 			log.Printf("Unable to read %q: %s", path, err)
 		}

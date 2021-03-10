@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 	"time"
 )
@@ -17,6 +18,15 @@ type RotationEntry struct {
 type Rotation struct {
 	entries  []RotationEntry
 	Metadata map[string]string
+}
+
+func RotationFromFile(name string) (Rotation, error) {
+	f, err := os.Open(name)
+	defer f.Close()
+	if err != nil {
+		return Rotation{}, err
+	}
+	return ReadFile(f)
 }
 
 func ReadFile(r io.Reader) (Rotation, error) {
@@ -84,6 +94,15 @@ func (r *Rotation) At(t time.Time) RotationEntry {
 	}
 	entry := r.entries[len(r.entries)]
 	return entry
+}
+
+func (r *Rotation) Next(t time.Time) RotationEntry {
+	for _, s := range r.entries {
+		if s.Start.After(t) {
+			return s
+		}
+	}
+	return r.entries[len(r.entries)]
 }
 
 func (r *RotationEntry) String() string {
