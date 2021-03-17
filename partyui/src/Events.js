@@ -15,6 +15,8 @@ import Box from '@material-ui/core/Box';
 import logo from "./logo.svg";
 import OnCall from './OnCall';
 import GitHubIcon from '@material-ui/icons/GitHub';
+import ForwardIcon from '@material-ui/icons/ArrowForward';
+import BackIcon from '@material-ui/icons/ArrowBack';
 
 function Copyright() {
     return (
@@ -91,15 +93,16 @@ const useStyles = makeStyles((theme) => ({
 export default function Events() {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
+
+    const [nowOn, setNowOn] = useState(new Date());
+
     const [items, setItems] = useState({support:[],events:[]});
 
     const classes = useStyles();
 
-    // Note: the empty deps array [] means
-    // this useEffect will run once
-    // similar to componentDidMount()
-    useEffect(() => {
-        fetch("/now")
+    const loadNow = (nowQuery) => {
+        console.log("/now?"+nowQuery)
+        fetch("/now?"+nowQuery)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -114,7 +117,24 @@ export default function Events() {
                     setError(error);
                 }
             )
-    }, [])
+    };
+
+    const doForward = () => {
+        let now = new Date(nowOn.setDate(nowOn.getDate()+7));
+        setNowOn(now)
+        loadNow("on="+now.toISOString())
+    };
+
+    const doBack = () => {
+        let now = new Date(nowOn.setDate(nowOn.getDate()-7));
+        setNowOn(now)
+        loadNow("on="+now.toISOString())
+    };
+
+    // Note: the empty deps array [] means
+    // this useEffect will run once
+    // similar to componentDidMount()
+    useEffect(loadNow, [])
 
     if (error) {
         return (
@@ -208,6 +228,21 @@ export default function Events() {
                             </Card>
                         </Grid>
                         ))}
+                        <Grid item key="back" xs={1} sm={1} md={1}>
+                            <Button color="inherit" onClick={doBack}>
+                                <BackIcon />
+                            </Button>
+                        </Grid>
+                        <Grid item key="display" xs={10} sm={10} md={10}>
+                            <Typography variant="h7" align="center" color="textSecondary" component="p">
+                                Displaying week of {nowOn.toLocaleDateString()}
+                            </Typography>
+                        </Grid>
+                        <Grid item key="next" xs={1} sm={1} md={1}>
+                            <Button color="inherit" onClick={doForward}>
+                                <ForwardIcon />
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Container>
                 {/* Footer */}
