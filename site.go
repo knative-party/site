@@ -25,6 +25,45 @@ type envConfig struct {
 
 var env envConfig
 
+func bestDate(r *http.Request) time.Time {
+	on := time.Now()
+	keys, ok := r.URL.Query()["on"]
+	if ok && len(keys) == 1 {
+		if then, err := time.Parse(time.RFC3339, keys[0]); err != nil {
+			// try simple date.
+			if then, err := time.Parse("2006-01-02", keys[0]); err != nil {
+				log.Println("invalid date:", keys[0])
+			} else {
+				on = then
+				on = on.Add(time.Hour * (7 + 9)) // 9am PST
+			}
+		} else {
+			on = then
+		}
+	}
+
+	// it is always monday.
+	switch on.Weekday() {
+	case time.Sunday:
+		on = on.Add(time.Hour * 12 * 1)
+	case time.Monday:
+		// ok
+	case time.Tuesday:
+		on = on.Add(-1 * time.Hour * 12 * 1)
+	case time.Wednesday:
+		on = on.Add(-1 * time.Hour * 12 * 2)
+	case time.Thursday:
+		on = on.Add(-1 * time.Hour * 12 * 3)
+	case time.Friday:
+		on = on.Add(-1 * time.Hour * 12 * 4)
+	case time.Saturday:
+		on = on.Add(time.Hour * 12 * 2)
+	}
+
+	log.Println("loading date:", on.String())
+	return on
+}
+
 func main() {
 	if err := envconfig.Process("", &env); err != nil {
 		log.Fatalf("failed to process env var: %s", err)
@@ -37,8 +76,9 @@ func main() {
 
 	m := http.NewServeMux()
 	m.HandleFunc("/now", func(w http.ResponseWriter, r *http.Request) {
+		on := bestDate(r)
 		out := json.NewEncoder(w)
-		out.Encode(getNow())
+		out.Encode(getNow(on))
 	})
 	m.Handle("/", http.FileServer(http.Dir(www)))
 
@@ -46,7 +86,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", env.Port), m))
 }
 
-func getNow() (now Now) {
+func getNow(on time.Time) (now Now) {
 	configPath := filepath.Join(env.DataPath, "config.yaml")
 	file, err := ioutil.ReadFile(configPath)
 	if err != nil {
@@ -63,12 +103,12 @@ func getNow() (now Now) {
 	for _, url := range c.Events {
 		c := make(chan event)
 		eC = append(eC, c)
-		go loadEvent(url, c)
+		go loadEvent(url, on, c)
 	}
 	for _, url := range c.Rotations {
 		c := make(chan tier)
 		tC = append(tC, c)
-		go loadTier(url, c)
+		go loadTier(url, on, c)
 	}
 
 	for _, c := range eC {
@@ -85,7 +125,7 @@ func getNow() (now Now) {
 	return now
 }
 
-func loadEvent(url string, c chan event) {
+func loadEvent(url string, on time.Time, c chan event) {
 	defer close(c)
 	r, err := rotation.FromURL(url)
 	if err != nil {
@@ -97,29 +137,29 @@ func loadEvent(url string, c chan event) {
 		log.Printf("Unable to parse duration from %q: %s", url, err)
 		duration = 1 * time.Hour
 	}
-	entry := r.Next(time.Now())
+	entry := r.Next(on)
 	end := entry.Start.Add(duration)
 	c <- event{
 		Title:        r.Metadata["title"],
 		WorkingGroup: strings.Join(entry.Data, " "),
-		When:         entry.Start.Format("March 2, 2006 @ 15:04") + " - " + end.Format("15:04 MST"),
+		When:         entry.Start.Format("Jan 2, 2006 @ 15:04") + " - " + end.Format("15:04 MST"),
 	}
 }
 
-func loadTier(url string, c chan tier) {
+func loadTier(url string, on time.Time, c chan tier) {
 	defer close(c)
 	r, err := rotation.FromURL(url)
 	if err != nil {
 		log.Printf("Unable to read %q: %s", url, err)
 		return
 	}
-	entry := r.At(time.Now())
+	entry := r.At(on)
 	c <- tier{
 		Title: r.Metadata["title"],
 		OnCall: onCall{
 			Name:           entry.Data[0],
-			Start:          entry.Start.Format("March 2, 2006"),
-			End:            entry.End.Format("March 2, 2006"),
+			Start:          entry.Start.Format("Jan 2, 2006"),
+			End:            entry.End.Format("Jan 2, 2006"),
 			Github:         "https://github.com/" + entry.Data[0],
 			Questions:      r.Metadata["slack"],
 			QuestionsSlack: r.Metadata["slacklink"],
