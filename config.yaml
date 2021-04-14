@@ -1,6 +1,6 @@
 events:
-  - https://github.com/knative-party/site/raw/main/events/toc-review.rotation
+  - https://raw.githubusercontent.com/knative/community/main/mechanics/TOC-REVIEW.schedule
 rotations:
   - https://raw.githubusercontent.com/knative/serving/main/support/support.rotation
   - https://raw.githubusercontent.com/knative/eventing/main/support/support.rotation
-  - https://github.com/knative-party/site/raw/main/rotations/security.rotation
+  - https://raw.githubusercontent.com/knative/community/main/working-groups/security/vmt.rotation
