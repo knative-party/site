@@ -163,8 +163,9 @@ export default function Events() {
             </React.Fragment>
         )
     } else {
-        const tiers = items.support;
-        const events = items.events;
+        const tiers = items.support || [];
+        const events = items.events || [];
+
 
         return (
             <React.Fragment>
